@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+class FadingDivider extends StatelessWidget {
+  final Color color;
+  final double thickness;
+  final double fadeLength;
+
+  const FadingDivider({
+    super.key,
+    this.color = Colors.grey,
+    this.thickness = 1,
+    this.fadeLength = 0.2,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: thickness,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.transparent,
+            color.withOpacity(0.3),
+            color,
+            color.withOpacity(0.3),
+            Colors.transparent,
+          ],
+          stops: [0.0, 0.2, 0.5, 0.7, 1.0],
+        ),
+      ),
+    );
+  }
+}
