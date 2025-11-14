@@ -1,0 +1,68 @@
+import 'package:cryptography_flutter/cryptography_flutter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logger/logger.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'package:railcare/core/utils/utils.dart';
+import 'package:railcare/core/widgets/scroll_custom.dart';
+import 'package:web/web.dart' as web; // modern replacement for dart:html
+
+import 'app/routes/app_pages.dart';
+import 'app_binding.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Logger.level = Level.debug;
+  Environment.setEnvironment(EnvironmentEnum.dev);
+  FlutterCryptography.enable();
+
+  // -------------------------------
+  // FORCE SPLASH ON WEB RELOAD
+  // -------------------------------
+  if (kIsWeb) {
+    final currentHash = web.window.location.hash;
+
+    // If URL is not splash, rewrite it
+    if (currentHash != '#/splash') {
+      web.window.location.hash = '#/splash';
+    }
+  }
+
+  Hive.initFlutter();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      scrollBehavior: MyCustomScrollBehavior(),
+      debugShowCheckedModeBanner: false,
+      enableLog: true,
+      title: "IR RailCare",
+      // home: CalendarPage(),
+      initialRoute: AppPages.INITIAL,
+
+      getPages: AppPages.routes,
+      defaultTransition: Transition.fade,
+      initialBinding: AppBinding(),
+      smartManagement: SmartManagement.keepFactory,
+      builder: EasyLoading.init(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        MonthYearPickerLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // Add more locales as needed
+      ],
+    );
+  }
+}
